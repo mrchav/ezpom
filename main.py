@@ -7,10 +7,10 @@ class timer():
     def __init__(self):
 
         self.timer_active = False
-        self.timer_left = 0
+        self.left_time = 0
         # self.work_time = 20 * 60
         # self.rest_time = 5 * 60
-
+        self.on_top = 1
         self.WORK_TIME = 11
         self.REST_TIME = 20
 
@@ -19,24 +19,32 @@ class timer():
 
 
         self.main_window = tk.Tk()
+        self.main_window.iconbitmap(None)
         self.main_window.attributes('-topmost', True)
         self.main_window.geometry('400x150')
+        self.main_window.configure(bg='#FFFFFF')
         self.main_window.resizable(width=False, height=False)
 
         self.main_window.title("Easy timer pomodoro")
 
-        self.lb_current_action = tk.Label(self.main_window, text="Time to work", font=("Helvetica", 16))
+        self.lb_current_action = tk.Label(self.main_window, text="Time to work", font=("PTSansRegular", 16),bg='#FFFFFF')
+        #self.lb_current_action.grid(column=20, row=0, columnspan=30, rowspan=6,  sticky='nesw', padx=10, pady=5)
+        self.lb_current_action.place(x=80, y=5)
 
-        self.lb_current_action.grid(column=10, row=0)
+        self.lb_timer = tk.Label(self.main_window, text=self.true_time_view(self.WORK_TIME), font=("PTSansRegular", 34),bg='#FFFFFF')
+        #self.lb_timer.grid(column=20, row=7, columnspan=30, rowspan=6, padx=10, pady=5)
+        self.lb_timer.place(x=90, y=40)
 
-        self.lb_timer = tk.Label(self.main_window, text="20:00")
-        self.lb_timer.grid(column=10, row=1)
+        self.btn_start = tk.Button(self.main_window, text="Start", command=self.start_stop, width=10,bg='#FFFFFF')
+        #self.btn_start.grid(column=10, row=13,  columnspan=15)
+        self.btn_start.place(x=20, y=110)
 
-        self.btn_start = tk.Button(self.main_window, text="Start", command=self.start_stop)
-        self.btn_start.grid(column=1, row=3)
+        self.btn_reset = tk.Button(self.main_window, text="Reset", command=self.but_reset, width=10,bg='#FFFFFF')
+        #self.btn_reset.grid(column=30, row=13, columnspan=15)
+        self.btn_reset.place(x=120, y=110)
 
-        self.btn_reset = tk.Button(self.main_window, text="Reset", command=self.but_reset)
-        self.btn_reset.grid(column=10, row=3)
+        self.btn_on_top = tk.Button(self.main_window, text="on top", command=self.change_top, width=10,bg='#FFFFDD')
+        self.btn_on_top.place(x=280, y=40)
 
         self.main_process()
 
@@ -44,7 +52,9 @@ class timer():
         if self.timer_active == 5:
             self.update_time()
 
-        print(self.timer_active)
+
+
+        print(self.on_top)
         self.main_window.mainloop()
 
 
@@ -53,7 +63,10 @@ class timer():
         self.time_star_timer()
         self.set_data_to_work()
         self.btn_start.configure(text="Start")
-        self.main_window.after_cancel(self.current_timer)
+        try:
+            self.main_window.after_cancel(self.current_timer)
+        except:
+            print('timer not run')
         self.lb_timer.configure(text=self.true_time_view(self.left_time))
 
 
@@ -82,13 +95,13 @@ class timer():
             if self.timer_type == 'rest':
                 self.actual_timer = self.REST_TIME
             self.timer_active = 5
-            self.btn_start.configure(text='Stop timer')
+            self.btn_start.configure(text='Pause')
 
         elif self.timer_active == 1:  #timer in pause
             self.resume_timer()
             self.actual_timer = self.left_time
             self.timer_active = 5
-            self.btn_start.configure(text='Stop timer')
+            self.btn_start.configure(text='Pause')
             self.resume_timer()
 
         self.main_process()
@@ -111,7 +124,17 @@ class timer():
 
 
     def change_top(self):
-        self.main_window.attributes('-topmost', True)
+        if self.on_top == 1:
+            self.on_top = 0
+            self.main_window.attributes('-topmost', False)
+            self.btn_on_top.configure( bg = '#FFFFFF')
+
+        else:
+            self.on_top = 1
+            self.main_window.attributes('-topmost', True)
+            self.btn_on_top.configure(bg='#FFFFDD')
+
+
 
     def change_not_top(self):
         self.main_window.attributes('-topmost', False)
